@@ -1,7 +1,91 @@
+function getNewCar() {
+    return {
+        'city': 'Toronto',
+        'passengers': 0,
+        'gas': 100,
+    }
+}
 
-// Open the file autopilot.py and run it. Then make a new file called autopilot.js and attempt to reproduce it in JavaScript. When your autopilot.py file's output matches the output of autopilot.js, you're done!
+function addCar(cars, newCar) {
+    cars.push(newCar);
+    return `Adding a new car to fleet. Fleet size is now ${cars.length}.`;
+}
 
-// Hints
-// Make sure you run the Python code and understand what it's supposed to do before starting to write the JS.
-// Make sure to run and test your file as you go! You do not want to write the entire file and hope for the best. Remember that you can run node in your terminal, much like the Python shell. Work on one function at a time. You want to be confident that the function is working before you move on.
-// You don't need to go from top to bottom - think about which code makes sense to write first and start there.
+function pickUpPassenger(car) {
+    car['passengers'] += 1;
+    car['gas'] -= 10;
+    return `Picked up passenger. Car now has ${car['passengers']} passengers.`;
+}
+
+function getDestination(car) {
+    if (car['city'] == 'Toronto') {
+        return 'Mississauga';
+    } else if (car['city'] == 'Mississauga') {
+        return 'London';
+    } else if (car['city'] == 'London') {
+        return 'Toronto';
+    }
+}
+
+function fillUpGas(car) {
+    oldGas = car['gas'];
+    car['gas'] = 100;
+    return `Filled up to ${getGasDisplay(car['gas'])} on gas from ${getGasDisplay(oldGas)}`;
+}
+
+function getGasDisplay(gasAmount) {
+    return `${gasAmount}%`;
+}
+
+function drive(car, cityDistance) {
+    if (car['gas'] < cityDistance) {
+        return fillUpGas(car);
+    }
+    car['city'] = getDestination(car);
+    car['gas'] -= cityDistance;
+    return `Drove to ${car['city']}. Remaining gas: ${getGasDisplay(car['gas'])}`;
+}
+
+function dropOffPassengers(car) {
+    previousPassengers = car['passengers'];
+    car['passengers'] = 0;
+    return `Dropped off ${previousPassengers} passengers.`;
+}
+
+function act(car) {
+    distanceBetweenCities = 50;
+
+    if (car['gas'] < 20) {
+        return fillUpGas(car);
+    } else if (car['passengers'] < 3) {
+        return pickUpPassenger(car);
+    } else {
+        if (car['gas'] < distanceBetweenCities) {
+            return fillUpGas(car);
+        }
+        droveTo = drive(car, distanceBetweenCities);
+        passengersDropped = dropOffPassengers(car);
+        return `${droveTo} ${passengersDropped}`;
+    }
+}
+
+function commandFleet(cars) {
+    let i = 1
+    for (let index = 0; index < cars.length; index++) {
+        action = act(cars[index]);
+        console.log(`Car ${i}: ${action}`);
+        i += 1
+    }
+    console.log('---')
+}
+
+function addOneCarPerDay(cars, numDays) {
+    for(let i = 0; i < numDays; i++) {
+        newCar = getNewCar();
+        console.log(addCar(cars, newCar));
+        commandFleet(cars);
+    }
+}
+
+let cars = [];
+addOneCarPerDay(cars, 10)
